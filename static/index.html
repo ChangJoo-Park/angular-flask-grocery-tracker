@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grocery Tracker</title>
+</head>
+<body ng-app="groceryApp" ng-controller="GroceryListCtrl">
+    <form class="form-inline">
+        <div class="form-group">
+            <label class="sr-only" for="">label</label>
+            <input type="text" ng-model=newGrocery.name class="form-control" id="" placeholder="Input field">
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only" for="">label</label>
+            <input type="number" ng-model=newGrocery.price class="form-control" id="" placeholder="Input field">
+        </div>
+        <button type="submit" class="btn btn-primary" ng-click="addGrocery()">Submit</button>
+    </form>
+
+    <p>Total : {{ groceries.length }}</p>
+    <div ng-repeat="grocery in groceries">
+        <input type="text" ng-model=grocery.name> {{ grocery.price }}, {{ grocery.bought_at }}
+        <button ng-click="updateGrocery(grocery)">Update</button> <button ng-click="removeGrocery(grocery)">Remove</button>
+    </div>
+
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

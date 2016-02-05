@@ -1,0 +1,23 @@
+{
+  "name": "grocerytracker",
+  "authors": [
+    "ChangJoo-Park <pcjpcj2@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/static/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.4.9",
+    "moment": "momentjs#^2.11.2"
+  }
+}

@@ -1,0 +1,4 @@
+myenv
+static/bower_components
+*.db
+*.pyc
