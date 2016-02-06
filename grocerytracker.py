@@ -24,14 +24,13 @@ class GroceryModel(db.Model):
     name = db.Column(db.String)
     price = db.Column(db.Integer)
     bought_at = db.Column(db.Date)
-    created_at = db.Column(db.Date, default=datetime.now)
-    updated_at = db.Column(db.Date, default=datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now)
 
     def __init__(self, name, price, bought_at):
         self.name = name
         self.price = price
         self.bought_at = bought_at
-
 
 """ SCHEMAS """
 
@@ -56,7 +55,7 @@ except:
 db.create_all()
 
 # Add dummy Groceries
-numberOfDummies = 100
+numberOfDummies = 500
 fake = Factory.create()
 for x in range(0, numberOfDummies):
     from random import randint
