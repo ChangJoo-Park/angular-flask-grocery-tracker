@@ -1,6 +1,3 @@
-<h2>Edit</h2>
-
-{{itemId}}
 <form role="form">
     <legend>Edit Item</legend>
 
@@ -10,14 +7,24 @@
     </div>
 
     <div class="form-group">
+        <label for="">Place :</label>
+        <input type="text" class="form-control" id="" ng-model="item.place" placeholder="Input field">
+    </div>
+
+    <div class="form-group">
         <label for="">Price :</label>
         <input type="number" class="form-control" id="" ng-model="item.price" placeholder="Input field">
+    </div>
+
+    <div class="form-group">
+        <label for="">Quantity :</label>
+        <input type="number" class="form-control" id="" ng-model="item.quantity" placeholder="Input field">
     </div>
 
     <div class="form-group">
         <label for="">Bought at :</label>
         <input type="text" class="form-control" id="" ng-model="item.bought_at">
     </div>
-
-    <button type="submit" class="btn btn-primary" ng-click="update(item)">Submit</button>
+    <a href="#/" class="btn btn-default">Back to List</a>
+    <button type="submit" class="btn btn-success" ng-click="update(item)">Submit</button>
 </form>
