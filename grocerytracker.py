@@ -4,11 +4,15 @@ from flask_restful import Resource, Api, reqparse
 from flask.ext.sqlalchemy import SQLAlchemy
 from marshmallow import Schema, fields
 from faker import Factory
+import logging
 
 app = Flask(__name__, static_url_path='')
 api = Api(app)
 datetime = datetime.datetime
 
+logger = logging.getLogger('GroceryTracker')
+fomatter = '%(asctime)s - %(name)8s - %(levelname)8s - %(message)s'
+logging.basicConfig(format=fomatter, level=logging.DEBUG)
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///grocery.db'
@@ -75,6 +79,7 @@ for x in range(0, numberOfDummies):
     db.session.add(grocery)
     db.session.commit()
 
+
 # Serialize the query set
 # API
 # Parser for grocery
@@ -130,7 +135,7 @@ class GroceryList(Resource):
     def post(self):
         data = parser.parse_args()
         bought_at = datetime.strptime(data["bought_at"], "%Y-%m-%d")
-        grocery = GroceryModel(data["name"], data["price"], bought_at)
+        grocery = GroceryModel(data["name"], data["place"], data["price"], data["quantity"], bought_at)
         db.session.add(grocery)
         db.session.commit()
         return data, 201
