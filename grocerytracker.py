@@ -24,14 +24,16 @@ class GroceryModel(db.Model):
     name = db.Column(db.String)
     place = db.Column(db.String)
     price = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
     bought_at = db.Column(db.Date)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self, name, place, price, bought_at):
+    def __init__(self, name, place, price, quantity, bought_at):
         self.name = name
         self.place = place
         self.price = price
+        self.quantity = quantity
         self.bought_at = bought_at
 
 """ SCHEMAS """
@@ -43,6 +45,7 @@ class GrocerySchema(Schema):
     name = fields.Str()
     place  = fields.Str()
     price = fields.Int()
+    quantity = fields.Int()
     bought_at = fields.Date()
     created_at = fields.Date()
     updated_at = fields.Date()
@@ -65,9 +68,10 @@ for x in range(0, numberOfDummies):
     from random import randint
     name = fake.name()
     price = randint(0, 100)
+    quantity = randint(1, 10)
     place = fake.company()
     bought_at = fake.date_time_this_year()  # '2006-04-30T03:01:38'
-    grocery = GroceryModel(name, place, price, bought_at)
+    grocery = GroceryModel(name, place, price, quantity, bought_at)
     db.session.add(grocery)
     db.session.commit()
 
@@ -77,6 +81,7 @@ for x in range(0, numberOfDummies):
 parser = reqparse.RequestParser()
 parser.add_argument('name')
 parser.add_argument('price')
+parser.add_argument('quantity')
 parser.add_argument('bought_at')
 parser.add_argument('place')
 
