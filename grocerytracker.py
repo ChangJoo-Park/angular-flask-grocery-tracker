@@ -22,13 +22,15 @@ db = SQLAlchemy(app)
 class GroceryModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    place = db.Column(db.String)
     price = db.Column(db.Integer)
     bought_at = db.Column(db.Date)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self, name, price, bought_at):
+    def __init__(self, name, place, price, bought_at):
         self.name = name
+        self.place = place
         self.price = price
         self.bought_at = bought_at
 
@@ -39,9 +41,11 @@ class GroceryModel(db.Model):
 class GrocerySchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
+    place  = fields.Str()
     price = fields.Int()
     bought_at = fields.Date()
-
+    created_at = fields.Date()
+    updated_at = fields.Date()
 
 grocery_schema = GrocerySchema()
 groceries_schema = GrocerySchema(many=True)
@@ -61,8 +65,9 @@ for x in range(0, numberOfDummies):
     from random import randint
     name = fake.name()
     price = randint(0, 100)
-    bought_at = fake.date_time()  # '2006-04-30T03:01:38'
-    grocery = GroceryModel(name, price, bought_at)
+    place = fake.company()
+    bought_at = fake.date_time_this_year()  # '2006-04-30T03:01:38'
+    grocery = GroceryModel(name, place, price, bought_at)
     db.session.add(grocery)
     db.session.commit()
 
@@ -73,6 +78,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('name')
 parser.add_argument('price')
 parser.add_argument('bought_at')
+parser.add_argument('place')
 
 
 # Grocery

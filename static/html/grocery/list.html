@@ -6,6 +6,11 @@
 
     <div class="form-group">
         <label class="sr-only" for="">price : </label>
+        <input type="text" ng-model=newGrocery.place class="form-control" id="" placeholder="Input field">
+    </div>
+
+    <div class="form-group">
+        <label class="sr-only" for="">price : </label>
         <input type="number" ng-model=newGrocery.price class="form-control" id="" placeholder="Input field">
     </div>
 
@@ -24,6 +29,7 @@
         <tr>
             <th>Name</th>
             <th>Price</th>
+            <th>Place</th>
             <th>Bought At</th>
             <th>Actions</th>
         </tr>
@@ -33,11 +39,14 @@
         <tr>
             <td><input type="text" ng-model="searchByName" placeholder="Search By Name"></td>
             <td><input type="text" ng-model="searchByPrice" placeholder="Search By Price"></td>
+            <td><input type="text" ng-model="searchByPlace" placeholder="Search By Place"></td>
             <td><input type="text" ng-model="searchByDate" placeholder="Search By Date"></td>
         </tr>
-        <tr ng-repeat="grocery in groceries | filter: {name:searchByName, price:searchByPrice, bought_at:searchByDate} ">
+        <tr ng-repeat="grocery in groceries |
+        filter: {name:searchByName, place:searchByPlace, price:searchByPrice, bought_at:searchByDate} ">
             <td>{{grocery.name}}</td>
             <td>{{grocery.price | currency: "€"}}</td>
+            <td>{{grocery.place }}</td>
             <td>{{ grocery.bought_at }}</td>
             <th>
                 <a href="#/{{grocery.id}}/edit">Edit</a>
