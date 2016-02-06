@@ -95,10 +95,6 @@ groceryApp.controller('GroceryListCtrl', ['$scope', '$http', 'GroceryService',
             return totalPrice;
         }
     };
-
-    $scope.search = function() {
-
-    }
 }]);
 
 groceryApp.controller('GroceryItemEditCtrl', ['$scope', '$routeParams', 'GroceryService',

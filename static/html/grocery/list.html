@@ -18,7 +18,7 @@
 
 <!-- List -->
 <p><strong>Total :</strong> {{ groceries.length }}, <strong>Total price :</strong>  {{ totalPrice() | currency: "€" }}</p>
-
+<label for="">Search By Name</label>
 <table class="table table-bordered table-hover">
     <thead>
         <tr>
@@ -31,20 +31,11 @@
     <tbody>
         <!-- Search -->
         <tr>
-            <td>
-                <input type="text" ng-model="searchByName">
-            </td>
-            <td>
-                <input type="text" ng-model="searchByPrice">
-            </td>
-            <td>
-                <input type="text">
-            </td>
-            <td>
-                <button ng-click="search()">Search</button>
-            </td>
+            <td><input type="text" ng-model="searchByName" placeholder="Search By Name"></td>
+            <td><input type="text" ng-model="searchByPrice" placeholder="Search By Price"></td>
+            <td><input type="text" ng-model="searchByDate" placeholder="Search By Date"></td>
         </tr>
-        <tr ng-repeat="grocery in groceries">
+        <tr ng-repeat="grocery in groceries | filter: {name:searchByName, price:searchByPrice, bought_at:searchByDate} ">
             <td>{{grocery.name}}</td>
             <td>{{grocery.price | currency: "€"}}</td>
             <td>{{ grocery.bought_at }}</td>
