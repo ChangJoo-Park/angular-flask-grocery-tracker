@@ -1,0 +1,50 @@
+body {
+    font-family: "Lato";
+    background-color: #f4f5f0;
+}
+.item {
+  -webkit-transition:0.2s linear all;
+  -moz-transition:0.2s linear all;
+  -o-transition:0.2s linear all;
+  transition:0.2s linear all; /* future proof */
+
+}
+
+.item.ng-enter {
+  opacity: 0;
+}
+
+.item.ng-enter.ng-enter-active {
+  opacity: 1;
+}
+
+.item.ng-leave {
+  opacity: 1;
+}
+
+.item.ng-leave.ng-leave-active {
+  opacity: 0;
+}
+
+[animate-on-change] {
+    -webkit-transition:0.2s linear all;
+    -moz-transition:0.2s linear all;
+    -o-transition:0.2s linear all;
+    transition:0.2s linear all; /* future proof */
+}
+[animate-on-change].changed {
+    color: #98c224;
+    transition: none;
+    -webkit-transition: none;
+}
+
+#total {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.total {
+    font-size: 1.5em;
+}

@@ -1,10 +1,14 @@
-var groceryApp = angular.module('groceryApp', ['ngResource', 'ngRoute']);
+var groceryApp = angular.module('groceryApp', ['ngResource', 'ngRoute', 'ngAnimate']);
 
 groceryApp.config(['$routeProvider',function($routeProvider){
     $routeProvider.
         when('/', {
             templateUrl: '../html/grocery/list.html',
             controller: 'GroceryListCtrl'
+        }).
+        when('/new', {
+            templateUrl: '../html/grocery/new.html',
+            controller: 'GroceryItemAddCtrl'
         }).
         when('/:itemId/edit', {
             templateUrl: '../html/grocery/edit.html',
@@ -19,6 +23,21 @@ groceryApp.config(['$routeProvider',function($routeProvider){
       });
 }]);
 
+groceryApp.directive('animateOnChange', ['$timeout', function($timeout){
+    return function(scope, element, attr) {
+        scope.$watch(attr.animateOnChange, function(nv, ov){
+            if (nv!=ov) {
+                element.addClass('changed');
+                $timeout(function() {
+                    element.removeClass('changed');
+                }, 1000);
+            }
+        });
+    }
+}]);
+
+
+
 groceryApp.factory('GroceryService', ['$http', function($http){
     var urlBase = '/api/groceries';
     var dataFactory = {};
@@ -27,7 +46,6 @@ groceryApp.factory('GroceryService', ['$http', function($http){
     };
 
     dataFactory.getGrocery = function(id) {
-        console.log("GET GROCERY");
         return $http.get(urlBase + "/" + id);
     };
 
@@ -51,15 +69,18 @@ groceryApp.controller('GroceryListCtrl', ['$scope', '$http', 'GroceryService',
                                  function($scope, $http, GroceryService){
     $scope.myWord = "Hello GroceryTracker";
     $scope.newGrocery = {};
+    $scope.filteredGroceries = {}
     // GET
-    // $scope.groceries = GroceryService.getGroceries();
     getGroceries();
     function getGroceries() {
         GroceryService.getGroceries().success(function(result){
             $scope.groceries = result.data;
         });
     }
-
+    $scope.refresh = function() {
+        $scope.groceries = {};
+        getGroceries();
+    }
     // POST
     function addGrocery() {
         var data = $scope.newGrocery;
@@ -95,6 +116,37 @@ groceryApp.controller('GroceryListCtrl', ['$scope', '$http', 'GroceryService',
             return totalPrice;
         }
     };
+
+    $scope.totalFilteredPrice = function() {
+        if(!$scope.filtered || $scope.filteredGroceries === undefined) {
+            return;
+        }
+        var sum = 0;
+        angular.forEach($scope.filteredGroceries,function(item){
+            sum +=item.price;
+        })
+        return sum;
+    };
+    $scope.filtered = function() {
+        if($scope.searchByName === undefined && $scope.searchByPlace === undefined && $scope.searchByDate === undefined) {
+            return false;
+        }
+        filterLength = getLengthIfExists([$scope.searchByName, $scope.searchByPlace, $scope.searchByDate]);
+        if(filterLength > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function getLengthIfExists(checkStrings) {
+        var length = 0;
+        for (var i = checkStrings.length - 1; i >= 0; i--) {
+            if(checkStrings[i] !== undefined) {
+                length += checkStrings[i].length;
+            }
+        };
+        return length;
+    }
 }]);
 
 groceryApp.controller('GroceryItemEditCtrl', ['$scope', '$routeParams', 'GroceryService',
@@ -109,6 +161,17 @@ groceryApp.controller('GroceryItemEditCtrl', ['$scope', '$routeParams', 'Grocery
         });
     };
 }]);
+
+groceryApp.controller('GroceryItemAddCtrl', ['$scope', 'GroceryService',
+                             function($scope, GroceryService){
+    $scope.item = {};
+    $scope.add = function () {
+        var item = $scope.item;
+        GroceryService.addGrocery(item).success(function(){
+        });
+    };
+}]);
+
 
 groceryApp.controller('AboutCtrl', ['$scope',function($scope){
 
