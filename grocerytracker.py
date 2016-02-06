@@ -10,23 +10,13 @@ api = Api(app)
 datetime = datetime.datetime
 
 
-# Get now for log
-def now():
-    return datetime.now().isoformat()
-
-
-def logger(message):
-    print(now(), " - ", message)
-
-
 # Database
-logger("START CREATE DATABASE")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///grocery.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
+
 """ Models """
-logger("START SET MODELS")
 
 
 class GroceryModel(db.Model):
@@ -57,14 +47,12 @@ class GrocerySchema(Schema):
 grocery_schema = GrocerySchema()
 groceries_schema = GrocerySchema(many=True)
 # Delete Remove All Groceries
-logger("REMOVE ALL DATABASE")
 try:
     db.drop_all(bind=None)
 except:
     db.session.rollback()
 
 # Create again db
-logger("START CREATE DATABASE")
 db.create_all()
 
 # Add dummy Groceries
@@ -78,9 +66,6 @@ for x in range(0, numberOfDummies):
     grocery = GroceryModel(name, price, bought_at)
     db.session.add(grocery)
     db.session.commit()
-logger("Data Created")
-logger("PROCESS DATABASE ENDED")
-logger("CALL GROCERY DATA")
 
 # Serialize the query set
 # API
