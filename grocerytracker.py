@@ -1,20 +1,23 @@
 import datetime
-import logging
-import json
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 from flask.ext.sqlalchemy import SQLAlchemy
-from marshmallow import Schema, fields, ValidationError, pre_load
+from marshmallow import Schema, fields
 from faker import Factory
 
 app = Flask(__name__, static_url_path='')
 api = Api(app)
 datetime = datetime.datetime
+
+
 # Get now for log
 def now():
     return datetime.now().isoformat()
+
+
 def logger(message):
     print(now(), " - ", message)
+
 
 # Database
 logger("START CREATE DATABASE")
@@ -22,7 +25,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///grocery.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
-#### Models ####
+""" Models """
 logger("START SET MODELS")
 
 
@@ -33,17 +36,23 @@ class GroceryModel(db.Model):
     bought_at = db.Column(db.Date)
     created_at = db.Column(db.Date, default=datetime.now)
     updated_at = db.Column(db.Date, default=datetime.now)
+
     def __init__(self, name, price, bought_at):
         self.name = name
         self.price = price
         self.bought_at = bought_at
 
-#### SCHEMAS ####
+
+""" SCHEMAS """
+
+
+# Grocery Schemas
 class GrocerySchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
     price = fields.Int()
     bought_at = fields.Date()
+
 
 grocery_schema = GrocerySchema()
 groceries_schema = GrocerySchema(many=True)
@@ -64,8 +73,8 @@ fake = Factory.create()
 for x in range(0, numberOfDummies):
     from random import randint
     name = fake.name()
-    price = randint(0,100)
-    bought_at = fake.date_time() # '2006-04-30T03:01:38'
+    price = randint(0, 100)
+    bought_at = fake.date_time()  # '2006-04-30T03:01:38'
     grocery = GroceryModel(name, price, bought_at)
     db.session.add(grocery)
     db.session.commit()
@@ -81,6 +90,7 @@ parser.add_argument('name')
 parser.add_argument('price')
 parser.add_argument('bought_at')
 
+
 # Grocery
 # Show a single grocery item and lets you delete a grocery item
 class Grocery(Resource):
@@ -91,7 +101,7 @@ class Grocery(Resource):
         grocery = self.find_by_id(grocery_id)
         result = grocery_schema.dump(grocery)
         # abort_if_grocery_doesnt_exist(grocery_id)
-        return jsonify({ 'data': result.data })
+        return jsonify({'data': result.data})
 
     def delete(self, grocery_id):
         grocery = self.find_by_id(grocery_id)
@@ -107,19 +117,24 @@ class Grocery(Resource):
         grocery.price = data["price"]
         db.session.commit()
         result = grocery_schema.dump(grocery)
-        return jsonify({ 'data': result.data })
+        return jsonify({'data': result.data})
+
+
 # TodoList
 # show s a list of all grocery, and lets you POST to add new grocery
 class GroceryList(Resource):
     def get(self):
-        groceries = GroceryModel.query.order_by(GroceryModel.bought_at.desc(), GroceryModel.created_at.desc()).all()
+        gm = GroceryModel
+        gmBoughtAt = gm.bought_at.desc()
+        gmCreateAt = gm.created_at.desc()
+        groceries = gm.query.order_by(gmBoughtAt, gmCreateAt).all()
         # Serialize the query set
         result = groceries_schema.dump(groceries)
-        return jsonify({ 'data': result.data })
+        return jsonify({'data': result.data})
 
     def post(self):
         data = parser.parse_args()
-        bought_at = datetime.strptime(data["bought_at"], "%Y-%m-%d %H:%M:%S")
+        bought_at = datetime.strptime(data["bought_at"], "%Y-%m-%d")
         grocery = GroceryModel(data["name"], data["price"], bought_at)
         db.session.add(grocery)
         db.session.commit()
@@ -127,8 +142,10 @@ class GroceryList(Resource):
 
 
 # Setting API
-api.add_resource(GroceryList, '/api/groceries');
-api.add_resource(Grocery, '/api/groceries/<int:grocery_id>');
+api.add_resource(GroceryList, '/api/groceries', '/api/groceries/')
+api.add_resource(Grocery, '/api/groceries/<int:grocery_id>')
+
+
 # Routes
 @app.route('/')
 def index():
