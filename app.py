@@ -20,6 +20,11 @@ logging.basicConfig(format=fomatter, level=logging.DEBUG)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///grocery.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
+try:
+    db.reflect()
+    db.drop_all()
+except:
+    db.session.rollback()
 
 """ Models """
 
