@@ -1,3 +1,4 @@
+import os
 import logging
 import datetime
 from flask import Flask, jsonify, render_template
@@ -16,6 +17,7 @@ fomatter = '%(asctime)s - %(name)8s - %(levelname)8s - %(message)s'
 logging.basicConfig(format=fomatter, level=logging.DEBUG)
 
 # Database
+os.remove("grocery.db")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///grocery.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
