@@ -19,3 +19,4 @@ python app.py
 - Add Statistics
 - Sqlite3 to Postgresql 
 - Restructure directories
+- Add About and Manuals
