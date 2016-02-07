@@ -1,3 +1,4 @@
+import os
 import logging
 import datetime
 from flask import Flask, jsonify, render_template
@@ -150,6 +151,33 @@ api.add_resource(GroceryAPI, '/api/groceries/<int:grocery_id>')
 
 
 # asset compile
+def splitall(path):
+    allparts = []
+    while 1:
+        parts = os.path.split(path)
+        if parts[0] == path:
+            allparts.insert(0, parts[0])
+        elif parts[1] == path:
+            allparts.insert(0, parts[1])
+        else:
+            path = parts[0]
+            allparts.insert(0, parts[1])
+    return allparts
+
+
+def assetsList(app, folder='js', extension='js', exclusions=[]):
+    files_list = []
+    for root, dirs, files in os.walk(os.path.join(app.static_folder, folder)):
+        for file in files:
+            if file.endswith("."+extension) and all(file != s for s in exclusions):
+                path_parts = splitall(root)
+                static_index = path_parts.index("static")
+                path_parts = path_parts[static_index+1:]
+                path_parts.append(file)
+                files_list.append('/'.join(path_parts))
+    return files_list
+
+
 assets = Environment(app)
 
 bundles = {
@@ -159,7 +187,7 @@ bundles = {
         'libs/fontawesome/css/font-awesome.css',
         'libs/select2/css/select2.css',
         'css/style.css',
-        output='css_min.css', filters='cssmin'),
+        output='compiled/css/css_min.css', filters='cssmin'),
 
     'js_min': Bundle(
         'libs/angular/angular.js',
@@ -171,8 +199,18 @@ bundles = {
         'libs/bootstrap/js/bootstrap.js',
         'libs/bootstrap-datepicker/js/bootstrap-datepicker.js',
         'libs/select2/js/select2.js',
+        output='compiled/js/js_min.js', filters='jsmin'),
+
+    'js_angular': Bundle(
         'js/app.js',
-        output='js_min.js', filters='jsmin')
+        'js/controllers/About.js',
+        'js/controllers/GroceryListCtrl.js',
+        'js/controllers/GroceryItemAddCtrl.js',
+        'js/controllers/GroceryItemEditCtrl.js',
+        'js/directives/AnimateOnChange.js',
+        'js/filters/unique.js',
+        'js/services/GroceryService.js',
+        output='compiled/js/js_angular.js', filters='jsmin')
 }
 
 assets.register(bundles)
@@ -183,7 +221,6 @@ assets.register(bundles)
 def index():
     return render_template("index.html")
     # return app.send_static_file("index.html")
-
 
 
 if __name__ == "__main__":
