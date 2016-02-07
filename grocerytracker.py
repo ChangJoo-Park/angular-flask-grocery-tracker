@@ -47,7 +47,7 @@ class Grocery(db.Model):
 class GrocerySchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
-    place  = fields.Str()
+    place = fields.Str()
     price = fields.Float()
     quantity = fields.Int()
     bought_at = fields.Date()
@@ -135,7 +135,8 @@ class GroceryListAPI(Resource):
     def post(self):
         data = parser.parse_args()
         bought_at = datetime.strptime(data["bought_at"], "%Y-%m-%d")
-        grocery = Grocery(data["name"], data["place"], data["price"], data["quantity"], bought_at)
+        grocery = Grocery(data["name"], data["place"], data["price"],
+                          data["quantity"], bought_at)
         db.session.add(grocery)
         db.session.commit()
         return data, 201
