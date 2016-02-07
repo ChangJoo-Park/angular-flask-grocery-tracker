@@ -5,7 +5,7 @@ Using python 3.5.1
 ## Installation
 ```
 # Must be set env 
-pip install
+pip install -U -r requirements.txt 
 python app.py
 ```
 
