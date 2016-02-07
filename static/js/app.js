@@ -38,6 +38,23 @@ groceryApp.directive('animateOnChange', ['$timeout', function($timeout){
 
 
 
+groceryApp.filter('unique', function() {
+   return function(collection, keyname) {
+      var output = [],
+          keys = [];
+
+      angular.forEach(collection, function(item) {
+          var key = item[keyname];
+          if(keys.indexOf(key) === -1) {
+              keys.push(key);
+              output.push(item);
+          }
+      });
+      return output;
+   };
+});
+
+
 groceryApp.factory('GroceryService', ['$http', function($http){
     var urlBase = '/api/groceries';
     var dataFactory = {};
@@ -70,6 +87,62 @@ groceryApp.controller('GroceryListCtrl', ['$scope', '$http', 'GroceryService',
     $scope.myWord = "Hello GroceryTracker";
     $scope.newGrocery = {};
     $scope.filteredGroceries = {}
+    $('#searchByName').select2({
+        placeholder: "Search By Name",
+        allowClear: true
+    });
+    $('#searchByPlace').select2({
+        placeholder: "Search By Place",
+        allowClear: true
+    });
+    $scope.searchByName = '';
+    $scope.searchByPlace = '';
+    $scope.searchByDate = '';
+
+    $('#searchByName').change(function(){
+        data = $("#searchByName").select2("data")[0];
+        if(data === undefined) {
+            $scope.$apply(function(){
+                $scope.searchByName = '';
+            });
+            return;
+        }
+        data = data.text.trim();
+        $scope.$apply(function(){
+            $scope.searchByName = data;
+        });
+    });
+
+    $('#searchByPlace').change(function(){
+        data = $("#searchByPlace").select2("data")[0];
+        if(data === undefined) {
+            $scope.$apply(function(){
+                $scope.searchByPlace = '';
+            });
+            return;
+        }
+        data = data.text.trim();
+        $scope.$apply(function(){
+            $scope.searchByPlace = data;
+        });
+    });
+
+    $("#datepicker").datepicker({
+        format: "yyyy-mm-dd",
+        weekStart: 1,
+        autoclose: true,
+        todayHighlight: true,
+        clearBtn: true
+    }).on('changeDate', function(e){
+        $scope.$apply(function(){
+            if(e.dates.length === 0) {
+                $scope.searchByDate = '';
+            } else {
+                $scope.searchByDate = moment(e.date).format("YYYY-MM-DD");
+            }
+        });
+    });
+
     // GET
     getGroceries();
     function getGroceries() {
@@ -127,6 +200,7 @@ groceryApp.controller('GroceryListCtrl', ['$scope', '$http', 'GroceryService',
         })
         return sum;
     };
+
     $scope.filtered = function() {
         if($scope.searchByName === undefined && $scope.searchByPlace === undefined && $scope.searchByDate === undefined) {
             return false;
@@ -138,6 +212,7 @@ groceryApp.controller('GroceryListCtrl', ['$scope', '$http', 'GroceryService',
             return false;
         }
     }
+
     function getLengthIfExists(checkStrings) {
         var length = 0;
         for (var i = checkStrings.length - 1; i >= 0; i--) {
@@ -147,10 +222,11 @@ groceryApp.controller('GroceryListCtrl', ['$scope', '$http', 'GroceryService',
         };
         return length;
     }
+
 }]);
 
-groceryApp.controller('GroceryItemEditCtrl', ['$scope', '$routeParams', 'GroceryService',
-                             function($scope, $routeParams, GroceryService){
+groceryApp.controller('GroceryItemEditCtrl', ['$scope', '$routeParams', 'GroceryService', '$location',
+                             function($scope, $routeParams, GroceryService, $location){
     $scope.itemId = $routeParams.itemId;
     GroceryService.getGrocery($scope.itemId).success(function(result){
         $scope.item = result.data;
@@ -158,16 +234,18 @@ groceryApp.controller('GroceryItemEditCtrl', ['$scope', '$routeParams', 'Grocery
 
     $scope.update = function(item) {
         GroceryService.updateGrocery($scope.item).success(function(){
+            $location.path('#/');
         });
     };
 }]);
 
-groceryApp.controller('GroceryItemAddCtrl', ['$scope', 'GroceryService',
-                             function($scope, GroceryService){
+groceryApp.controller('GroceryItemAddCtrl', ['$scope', 'GroceryService', '$location',
+                             function($scope, GroceryService, $location){
     $scope.item = {};
     $scope.add = function () {
         var item = $scope.item;
         GroceryService.addGrocery(item).success(function(){
+            $location.path('#/');
         });
     };
 }]);
