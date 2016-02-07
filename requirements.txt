@@ -3,6 +3,7 @@ fake-factory==0.5.3
 Flask==0.10.1
 Flask-RESTful==0.3.5
 Flask-SQLAlchemy==2.1
+gunicorn==19.4.5
 itsdangerous==0.24
 Jinja2==2.8
 MarkupSafe==0.23
