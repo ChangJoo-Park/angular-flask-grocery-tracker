@@ -23,11 +23,11 @@ db = SQLAlchemy(app)
 """ Models """
 
 
-class GroceryModel(db.Model):
+class Grocery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     place = db.Column(db.String)
-    price = db.Column(db.Integer)
+    price = db.Column(db.Float)
     quantity = db.Column(db.Integer)
     bought_at = db.Column(db.Date)
     created_at = db.Column(db.DateTime, default=datetime.now)
@@ -48,7 +48,7 @@ class GrocerySchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
     place  = fields.Str()
-    price = fields.Int()
+    price = fields.Float()
     quantity = fields.Int()
     bought_at = fields.Date()
     created_at = fields.Date()
@@ -66,7 +66,7 @@ except:
 db.create_all()
 
 # Add dummy Groceries
-numberOfDummies = 500
+numberOfDummies = 50
 fake = Factory.create()
 for x in range(0, numberOfDummies):
     from random import randint
@@ -75,7 +75,7 @@ for x in range(0, numberOfDummies):
     quantity = randint(1, 10)
     place = fake.company()
     bought_at = fake.date_time_this_year()  # '2006-04-30T03:01:38'
-    grocery = GroceryModel(name, place, price, quantity, bought_at)
+    grocery = Grocery(name, place, price, quantity, bought_at)
     db.session.add(grocery)
     db.session.commit()
 
@@ -93,9 +93,9 @@ parser.add_argument('place')
 
 # Grocery
 # Show a single grocery item and lets you delete a grocery item
-class Grocery(Resource):
+class GroceryAPI(Resource):
     def find_by_id(self, id):
-        return GroceryModel.query.filter(GroceryModel.id == id).first()
+        return Grocery.query.filter(Grocery.id == id).first()
 
     def get(self, grocery_id):
         grocery = self.find_by_id(grocery_id)
@@ -122,9 +122,9 @@ class Grocery(Resource):
 
 # TodoList
 # show s a list of all grocery, and lets you POST to add new grocery
-class GroceryList(Resource):
+class GroceryListAPI(Resource):
     def get(self):
-        gm = GroceryModel
+        gm = Grocery
         gmBoughtAt = gm.bought_at.desc()
         gmCreateAt = gm.created_at.desc()
         groceries = gm.query.order_by(gmBoughtAt, gmCreateAt).all()
@@ -135,15 +135,15 @@ class GroceryList(Resource):
     def post(self):
         data = parser.parse_args()
         bought_at = datetime.strptime(data["bought_at"], "%Y-%m-%d")
-        grocery = GroceryModel(data["name"], data["place"], data["price"], data["quantity"], bought_at)
+        grocery = Grocery(data["name"], data["place"], data["price"], data["quantity"], bought_at)
         db.session.add(grocery)
         db.session.commit()
         return data, 201
 
 
 # Setting API
-api.add_resource(GroceryList, '/api/groceries', '/api/groceries/')
-api.add_resource(Grocery, '/api/groceries/<int:grocery_id>')
+api.add_resource(GroceryListAPI, '/api/groceries', '/api/groceries/')
+api.add_resource(GroceryAPI, '/api/groceries/<int:grocery_id>')
 
 
 # Routes
