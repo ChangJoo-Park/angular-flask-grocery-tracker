@@ -17,11 +17,15 @@ fomatter = '%(asctime)s - %(name)8s - %(levelname)8s - %(message)s'
 logging.basicConfig(format=fomatter, level=logging.DEBUG)
 
 # Database
-os.remove("grocery.db")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///grocery.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
-
+# Delete Remove All Groceries
+try:
+    db.reflect()
+    db.drop_all()
+except:
+    db.session.rollback()
 
 """ Models """
 
@@ -59,11 +63,6 @@ class GrocerySchema(Schema):
 
 grocery_schema = GrocerySchema()
 groceries_schema = GrocerySchema(many=True)
-# Delete Remove All Groceries
-try:
-    db.drop_all(bind=None)
-except:
-    db.session.rollback()
 
 # Create again db
 db.create_all()
