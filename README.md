@@ -20,3 +20,4 @@ python app.py
 - Sqlite3 to Postgresql 
 - Restructure directories
 - Add About and Manuals
+- User Authentication
