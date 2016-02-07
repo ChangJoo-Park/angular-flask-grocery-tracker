@@ -1,4 +1,3 @@
-import os
 import logging
 import datetime
 from flask import Flask, jsonify, render_template
@@ -20,12 +19,6 @@ logging.basicConfig(format=fomatter, level=logging.DEBUG)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///grocery.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
-# Delete Remove All Groceries
-try:
-    db.reflect()
-    db.drop_all()
-except:
-    db.session.rollback()
 
 """ Models """
 
@@ -63,6 +56,13 @@ class GrocerySchema(Schema):
 
 grocery_schema = GrocerySchema()
 groceries_schema = GrocerySchema(many=True)
+
+# Delete Remove All Groceries
+try:
+    db.reflect()
+    db.drop_all()
+except:
+    db.session.rollback()
 
 # Create again db
 db.create_all()
