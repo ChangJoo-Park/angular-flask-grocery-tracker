@@ -1,10 +1,11 @@
+import logging
 import datetime
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_restful import Resource, Api, reqparse
 from flask.ext.sqlalchemy import SQLAlchemy
 from marshmallow import Schema, fields
 from faker import Factory
-import logging
+from flask.ext.assets import Environment, Bundle
 
 app = Flask(__name__, static_url_path='')
 api = Api(app)
@@ -147,10 +148,42 @@ api.add_resource(GroceryListAPI, '/api/groceries', '/api/groceries/')
 api.add_resource(GroceryAPI, '/api/groceries/<int:grocery_id>')
 
 
+# asset compile
+assets = Environment(app)
+
+bundles = {
+    'css_min': Bundle(
+        'libs/bootstrap/css/bootstrap.min.css',
+        'libs/bootstrap-datepicker/css/bootstrap-datepicker.css',
+        'libs/fontawesome/css/font-awesome.css',
+        'libs/select2/css/select2.css',
+        'css/style.css',
+        output='css_min.css', filters='cssmin'),
+
+    'js_min': Bundle(
+        'libs/angular/angular.js',
+        'libs/angular/angular-animate.js',
+        'libs/angular/angular-resource.js',
+        'libs/angular/angular-route.js',
+        'libs/jquery/jquery.js',
+        'libs/moment/moment.js',
+        'libs/bootstrap/js/bootstrap.js',
+        'libs/bootstrap-datepicker/js/bootstrap-datepicker.js',
+        'libs/select2/js/select2.js',
+        'js/app.js',
+        output='js_min.js', filters='jsmin')
+}
+
+assets.register(bundles)
+
+
 # Routes
 @app.route('/')
 def index():
-    return app.send_static_file("index.html")
+    return render_template("index.html")
+    # return app.send_static_file("index.html")
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
