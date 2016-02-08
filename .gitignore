@@ -3,4 +3,4 @@ static/bower_components
 *.db
 *.pyc
 static/.webassets-cache
-static/compiled/js
+static/compiled/
